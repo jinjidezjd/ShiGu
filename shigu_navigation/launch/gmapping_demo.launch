@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!--- Run gmapping -->
+  <include file="$(find shigu_navigation)/launch/gmapping.launch">
+  </include>
+
+  <!--- Run Move Base -->
+  <include file="$(find shigu_navigation)/launch/move_base.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find shigu_viz)/rviz/navigation.rviz" output="screen"/> 
+
+</launch>

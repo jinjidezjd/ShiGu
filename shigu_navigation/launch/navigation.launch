@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="map_file" default="$(find shigu_navigation)/maps/gmapping_2d.yaml"/>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+  <!-- AMCL -->
+  <include file="$(find shigu_navigation)/launch/amcl.launch"/>
+
+  <!--- Run Move Base -->
+  <include file="$(find shigu_navigation)/launch/move_base.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find shigu_viz)/rviz/navigation.rviz" output="screen"/> 
+
+</launch>

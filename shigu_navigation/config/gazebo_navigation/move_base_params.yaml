@@ -1,0 +1,18 @@
+# move_base节点配置参数
+# 休眠时是否关闭地图
+shutdown_costmaps: false
+# 控制频率
+controller_frequency: 10.0
+# 地图规划的容忍时
+planner_patience: 5.0
+# 控制器的容忍时间
+controller_patience: 15.0
+# 修复时的清理范围，即清理障碍物的前向距离
+conservative_reset_dist: 3.0
+# 全局路径规划频率
+planner_frequency: 10.0
+# 修复行为前的容忍时间
+oscillation_timeout: 10.0
+# 修复行为的容忍距离
+oscillation_distance: 0.2
+

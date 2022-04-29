@@ -1,0 +1,24 @@
+# 代价地图的通用配置参数
+# 最大障碍物的检测范围
+obstacle_range: 3.0
+# 自由空间的最大检测范围
+raytrace_range: 3.5
+# 机器人为矩形，设置机器人在坐标系内所占据的距离
+footprint: [[-0.450, -0.560], [-0.450, 0.560], [0.530, 0.560], [0.530, -0.560]]
+# 机器人为圆形
+#robot_radius: 0.17
+ 
+#  与障碍物的安全系数
+inflation_radius: 1.0
+
+
+# 地图类型
+map_type: costmap
+# 关注的数据类型
+# 点云
+# observation_sources: point_cloud_sensor
+# point_cloud_sensor: {sensor_frame: camera_Link, data_type: PointCloud2, topic: pointcloud, marking: true, clearing: true, inf_is_valid: true}
+# 激光
+observation_sources: scan
+scan: {sensor_frame: laser_Link, data_type: LaserScan, topic: scan, marking: true, clearing: true,inf_is_valid: true}
+

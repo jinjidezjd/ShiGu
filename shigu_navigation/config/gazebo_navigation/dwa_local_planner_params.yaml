@@ -1,0 +1,60 @@
+DWAPlannerROS:
+
+# Robot Configuration Parameters
+  # x速度
+  max_vel_x: 1.0
+  min_vel_x: 0.4
+  # y速度
+  max_vel_y: 0.0
+  min_vel_y: 0.0
+
+# The velocity when robot is moving in a straight line
+  # 平移x速度
+  max_vel_trans:  0.5
+  min_vel_trans:  0.1
+  # 平移y速度
+  max_vel_theta: 0.2
+  min_vel_theta: 0.2
+  # 加速度限制
+  acc_lim_x: 2.5
+  acc_lim_y: 0.0
+  acc_lim_theta: 3.2 
+
+# Goal Tolerance Parametes
+  # 位置允许偏差
+  xy_goal_tolerance: 0.1
+  # 角度允许偏差
+  yaw_goal_tolerance: 0.17
+  # 到达偏差距离内后，是否原地旋转
+  latch_xy_goal_tolerance: false
+
+# Forward Simulation Parameters
+  # 仿真时间
+  sim_time: 1.5
+  # 速度采样点数
+  vx_samples: 20
+  # 速度采样点数
+  vy_samples: 0
+  # 角度采样点数
+  vth_samples: 40
+  # 发送给底盘的控制指令频率
+  controller_frequency: 10.0
+
+# Trajectory Scoring Parameters
+  path_distance_bias: 32.0
+  goal_distance_bias: 20.0
+  occdist_scale: 0.02
+  forward_point_distance: 0.325
+  stop_time_buffer: 0.2
+  scaling_speed: 0.25
+  max_scaling_factor: 0.2
+
+# Oscillation Prevention Parameters
+  # 机器人运动多远距离才会重置振荡标记
+  oscillation_reset_dist: 0.05
+
+# Debugging
+  # 是否发布局部轨迹
+  publish_traj_pc : true
+  # 是否发布规划器在规划路径时的代价网络，true则发布点云
+  publish_cost_grid_pc: true

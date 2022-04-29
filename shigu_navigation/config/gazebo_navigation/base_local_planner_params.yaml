@@ -1,0 +1,34 @@
+# 局部路径规划算法
+TrajectoryPlannerROS:
+
+# Robot Configuration Parameters
+  #最大速度
+  max_vel_x: 0.5	
+  #最小速度
+  min_vel_x: 0.08	
+  #最大角速度
+  max_vel_theta:  1.0	
+  # 最小角速度
+  min_vel_theta: -1.0
+  min_in_place_vel_theta: 1.0
+# 加速度限制
+  acc_lim_x: 1.0
+  acc_lim_y: 0.0
+  acc_lim_theta: 0.6
+
+# Goal Tolerance Parameters
+# 位置方向允许误差
+  xy_goal_tolerance: 0.10
+  # 角度方向的允许误差
+  yaw_goal_tolerance: 0.05
+
+# Differential-drive robot configuration
+# 是否是全向移动机器人
+  holonomic_robot: false
+
+# Forward Simulation Parameters
+# 采样时间
+  sim_time: 0.8
+  vx_samples: 18
+  vtheta_samples: 20
+  sim_granularity: 0.05
