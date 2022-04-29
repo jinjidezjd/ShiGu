@@ -1,0 +1,33 @@
+<launch>
+<!--open the imu-->
+	<node pkg="serial_imu" name="imu_sonser_spec" type="serial_imu"/>
+<!--open the imu-->
+	<node pkg="serial_gps" name="gps_sonser_spec" type="serial_gps"/>
+   <!--open the lidar-->
+   <node name="flashgo_node"  pkg="flashgo"  type="flashgo_node" output="screen">
+    <param name="port"         type="string" value="/dev/ttyUSB2"/>  
+    <param name="baudrate"     type="int"    value="115200"/>
+    <param name="frame_id"     type="string" value="laser_Link"/>
+    <param name="angle_fixed"  type="bool"   value="true"/>
+    <param name="angle_min"    type="double" value="-180" />
+    <param name="angle_max"    type="double" value="180" />
+    <param name="ignore_array" type="string" value="" />
+  </node>
+  <!--open the zed stereo_camera-->
+  <include file="$(find zed_wrapper)/launch/zed_no_tf.launch">
+    <arg name="camera_model"          value="zed" />
+    <arg name="camera_name" value="zed"/>
+    <arg name="cam_pos_x"             value="0.14819" /> 
+    <arg name="cam_pos_y"             value="0.0" /> 
+    <arg name="cam_pos_z"             value="0.3474" /> 
+    <arg name="cam_roll"              value="0.0" /> 
+    <arg name="cam_pitch"             value="0.0" /> 
+    <arg name="cam_yaw"               value="0.0" />  
+ </include>
+
+<!--open the robot cotroller-->
+  <node name="base_controller" pkg="base_controller" type="base_controller" output="screen" >
+  </node>
+
+
+</launch>

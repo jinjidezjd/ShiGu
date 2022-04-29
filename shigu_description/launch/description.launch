@@ -1,0 +1,6 @@
+<launch>
+   <!-- Load the URDF into the ROS Parameter Server,在rviz中可以看到robot_model -->
+   <param name="robot_description"  
+    command="$(find xacro)/xacro --inorder '$(find shigu_description)/urdf/shigu.urdf' roboname:='/'" />  
+
+</launch>
