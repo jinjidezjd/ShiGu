@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node type="pcl_conversion" pkg="shigu_gazebo" name="pcl_conversion" output="screen" >
+    <!-- 参数 -->
+    <!-- 文件所在位置 -->
+    <param name="file_name"       type="string" value="$(find shigu_gazebo)/pcl/result_sw4.txt" />
+    <!-- 发布的话题 -->
+    <remap from="/points2"   to="/points2"/>
+  </node>
+
+  <node type="map_conversion" pkg="shigu_gazebo" name="map_conversion" output="screen" >
+    <!-- 参数 -->
+    <!-- 栅格分辨率，单位m -->
+    <param name="cellResolution"       type="double" value="0.3" />
+    <!-- 高度最高阈值，单位m -->
+    <param name="high_threshold"       type="double" value="-0.2" />
+    <!-- 高度最低阈值，单位m -->
+    <param name="low_threshold"       type="double" value="-1.3" />
+    <!-- 每个栅格中超过高度阈值的数量 -->
+    <param name="buffer_size"       type="int" value="1" />
+    <!-- 发布的话题 -->
+    <remap from="/map"   to="/map"/>
+    <!-- 订阅的话题 -->
+    <remap from="/points2"   to="/points2"/>
+  </node>
+  <!-- 草地参数:0.3,0.2,-0.25,1 -->
+  <!-- sw参数:0.3,0.2,-0.25,1 -->
+
+  <!-- 可视化 -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find shigu_viz)/rviz/map_creat.rviz" output="screen"/> 
+
+</launch>

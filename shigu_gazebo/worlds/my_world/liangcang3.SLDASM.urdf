@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="liangcang">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.39198 -0.94386 -1.0196"
+        rpy="0 0 0" />
+      <mass
+        value="5344900" />
+      <inertia
+        ixx="1058500000"
+        ixy="-54294000"
+        ixz="-3044000"
+        iyy="1090400000"
+        iyz="5223300"
+        izz="2143600000" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename= "package://shigu_gazebo/worlds/my_world/base_link.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename= "package://shigu_gazebo/worlds/my_world/base_link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo reference="base_link">
+        <material>Gazebo/Orange</material>    
+  </gazebo>
+  
+</robot>

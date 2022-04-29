@@ -1,0 +1,7 @@
+image: liangcang.pgm
+resolution: 0.300000
+origin: [-15.473031, -29.867878, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

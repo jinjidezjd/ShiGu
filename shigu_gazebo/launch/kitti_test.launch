@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- <param name="use_sim_time" value="true"/> -->
+  <!-- /media/sjtu/0C10BE5C10BE4C88/kitti/kitti_2011_10_03_drive_0027_synced.bag -->
+  <!-- /home/sjtu/zjd/ShiGu/src/dataset/kitti/kitti_2011_09_26_drive_0117_synced.bag-->
+  <node pkg="rosbag" type="play" name="rosbag_play" args="-r 1.0 --clock /media/sjtu/0C10BE5C10BE4C88/kitti/kitti_2011_10_03_drive_0027_synced.bag" required="true" output="screen" > 
+    <remap from="/kitti/oxts/gps/fix" to="/navsat/fix"/>
+    <remap from="/kitti/camera_color_left/camera_info" to="/stereo_camera/left/camera_info_throttle"/>
+    <remap from="/kitti/camera_color_left/image_raw" to="/stereo_camera/left/image_raw_throttle"/>
+    <remap from="/kitti/camera_color_right/camera_info" to="/stereo_camera/right/camera_info_throttle"/>
+    <remap from="/kitti/camera_color_right/image_raw" to="/stereo_camera/right/image_raw_throttle"/>
+    <remap from="/kitti/oxts/imu" to="/imu/data_init"/>
+  </node> 
+  <!-- 为imu加入协方差 -->
+  <node name="imu_cov" pkg="coordinate_transform" type="imu_cov" >
+    <!-- 发布的话题 -->
+    <remap from="/imu/data_cov" to="/imu/data"/>
+    <!-- 订阅的话题 -->
+    <remap from="/imu/data" to="/imu/data_init"/>
+  </node>
+  <!--gps转换为里程计数据-->
+  <node name="gps2odom" pkg="gps_common" type="gps2odom"  >
+    <!-- 发布的话题 -->
+    <remap from="/gps/odom"   to="/gps/odom"/>
+    <!-- 订阅的话题 -->
+    <remap from="/navsat/fix"   to="/navsat/fix"/>
+  </node>
+
+ <!-- gps里程计转换到载体坐标系 -->
+  <node name="gps2base" pkg="coordinate_transform" type="gps2base" >
+    <!-- 发布的话题 -->
+    <remap from="/gps/odom_base"   to="/gps/odom_base"/>
+    <!-- 订阅的话题 -->
+    <remap from="/gps/odom"   to="/gps/odom_valid"/>
+    <!-- 订阅的话题 -->
+    <remap from="/imu/initial_imu"   to="/imu/initial_imu"/>
+  </node>
+ <!-- gps里程计转换到载体坐标系 -->
+  <node name="gps2base_save" pkg="coordinate_transform" type="gps2base" >
+    <!-- 发布的话题 -->
+    <remap from="/gps/odom_base"   to="/gps/odom_base_save"/>
+    <!-- 订阅的话题 -->
+    <remap from="/gps/odom"   to="/gps/odom"/>
+    <!-- 订阅的话题 -->
+    <remap from="/imu/initial_imu"   to="/imu/initial_imu"/>
+  </node>
+
+  <!-- 视觉里程计,不发布tf -->   
+  <node pkg="rtabmap_ros" type="stereo_odometry" name="stereo_odometry">
+      <remap from="left/image_rect"   to="/stereo_camera/left/image_raw_throttle"/>
+      <remap from="right/image_rect"  to="/stereo_camera/right/image_raw_throttle"/>
+      <remap from="left/camera_info"  to="/stereo_camera/left/camera_info_throttle"/>
+      <remap from="right/camera_info" to="/stereo_camera/right/camera_info_throttle"/>
+      <remap from="odom"              to="/stereo_odometry"/>
+      <param name="publish_tf"   type="bool" value="false"/>
+      <param name="approx_sync"   type="bool" value="true"/>
+      <param name="subscribe_rgbd"  type="bool" value="false"/>
+      <param name="frame_id"        type="string" value="imu_link"/>
+      <param name="odom_frame_id"   type="string" value="odom"/>
+      <param name="publish_null_when_lost"        type="bool" value="false"/>
+      <param name="Odom/Strategy"      type="string" value="1"/> 
+      <param name="Vis/EstimationType" type="string" value="1"/>
+      <param name="Vis/MaxDepth"       type="string" value="0"/>
+      <param name="Odom/GuessMotion" type="string" value="true"/>
+      <param name="Vis/MinInliers"     type="string" value="10"/>
+      <param name="OdomF2M/MaxSize"    type="string" value="1000"/> 
+      <param name="GFTT/MinDistance"   type="string" value="10"/>
+      <param name="GFTT/QualityLevel"  type="string" value="0.00001"/> 
+      <param name="GFTT/QualityLevel"  type="string" value="0.00001"/>
+  </node>
+
+  <!-- 视觉里程计从载体坐标系转换到导航东北天坐标系 -->
+  <node name="stere2ENU" pkg="coordinate_transform" type="stereBASE2ENU" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_enu"   to="/stereo_odometry_enu"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry"   to="/stereo_odometry"/>
+    <!-- 订阅的话题 -->
+    <remap from="/imu/initial_imu"   to="/imu/initial_imu"/>
+  </node>
+
+  <!-- 视觉里程计从camera_color_left转换到前左上坐标系 -->
+  <node name="stereo2base" pkg="coordinate_transform" type="stereo2base" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_base" to="/stereo_odometry_base"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry" to="/stereo_odometry"/>
+  </node>
+  <!-- 视觉里程计从enu坐标系进行平移变换 -->
+  <node name="stereo_enu2base" pkg="coordinate_transform" type="stereo_enu2base" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_enu_base" to="/stereo_odometry_enu_base"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry_enu" to="/stereo_odometry_base"/>
+  </node>
+  
+
+
+  <!-- 九轴imu从北西天坐标系转换到东北天坐标系 -->
+  <!-- <node name="imuNWU2ENU" pkg="coordinate_transform" type="imuNWU2ENU">
+    <remap from="/imu/data_enu"   to="/imu/data_enu"/>
+    <remap from="/imu/data"   to="/imu/data"/>
+  </node> -->
+
+  <!-- 九轴imu的角速度、加速度转换到enu坐标系 -->
+  <!-- <node name="imu2enu" pkg="coordinate_transform" type="imu2enu">
+    <remap from="/imu/data_enu"   to="/imu/data_enu"/>
+    <remap from="/imu/data"   to="/imu/data"/>
+  </node> -->
+
+  <!-- 保存九轴imu初始姿态 -->
+  <node name="initial_imu" pkg="coordinate_transform" type="initial_imu" >
+    <remap from="/imu/data_enu"   to="/imu/data"/>
+  </node>
+  <!-- 视觉里程计从相机坐标系转换到imu坐标系 -->
+  <node name="stereo2imu_initial" pkg="coordinate_transform" type="stereo2imu" output="screen" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_imu"   to="/stereo_odometry_imu"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry"   to="/stereo_odometry"/>
+  </node>
+
+
+  <!-- 控制gps通断 -->
+  <node name="gps_valid" pkg="coordinate_transform" type="gps_valid" >
+    <!-- 发布的话题 -->
+    <remap from="/navsat/fix_valid" to="/navsat/fix_valid"/>
+    <!-- 订阅的话题 -->
+    <remap from="/navsat/fix" to="/navsat/fix"/>
+  </node>
+  <!--控制gps里程计通断-->
+  <node name="gps_odom_valid" pkg="gps_common" type="gps2odom"  >
+    <!-- 发布的话题 -->
+    <remap from="/gps/odom" to="/gps/odom_valid"/>
+    <!-- 订阅的话题 -->
+    <remap from="/navsat/fix" to="/navsat/fix_valid"/>
+  </node>
+  <!-- 控制vo通断 -->
+  <node name="vo_valid" pkg="coordinate_transform" type="vo_valid" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_valid" to="/stereo_odometry_valid"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry" to="/stereo_odometry_enu_base"/>
+  </node>
+
+  <!-- VIO-FUSION视觉里程计 -->
+  <!-- <node pkg="vins" type="vins_node" name="vins_node" args="/home/sjtu/zjd/ShiGu/src/VINS-Fusion/config/my_stereo_imu_fusion.yaml">
+    <remap from="/imu0" to="/imu/data"/>
+    <remap from="/cam0/image_raw" to="/stereo_camera/left/image_raw_throttle"/>
+    <remap from="/cam1/image_raw" to="/stereo_camera/right/image_raw_throttle"/>
+    <remap from="/vins_node/odometry" to="/vins_node/odometry"/>
+  </node>
+
+  <node name="vins2imu_initial" pkg="coordinate_transform" type="stereo2imu" output="screen" >
+    <remap from="/stereo_odometry_imu"   to="/vins_node/odometry_imu"/>
+    <remap from="/stereo_odometry"   to="/vins_node/odometry"/>
+  </node> -->
+
+    <!-- 视觉里程计从camera_color_left转换到前左上坐标系 -->
+  <node name="vins2base" pkg="coordinate_transform" type="stereo2base" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_base" to="/vins_node/odometry_base"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry" to="/vins_node/odometry_imu"/>
+  </node>
+  <!-- 视觉里程计从enu坐标系进行平移变换 -->
+  <node name="vins_enu2base" pkg="coordinate_transform" type="stereo_enu2base" >
+    <!-- 发布的话题 -->
+    <remap from="/stereo_odometry_enu_base" to="/vins_node/odometry_final"/>
+    <!-- 订阅的话题 -->
+    <remap from="/stereo_odometry_enu" to="/vins_node/odometry_base"/>
+  </node>
+
+  <!-- IMU里程计 -->
+  <!-- <include file="$(find drive_ros_localize_inertial_navigation_system)/launch/ins.launch">
+    <arg name="imu_topic"       value="/imu/data" />
+    <arg name="odom_topic"      value="/imu_odom" />
+    <arg name="static_frame"    value="odom" />
+    <arg name="moving_frame"    value="base_link" />
+  </include>
+  <node pkg="ekf_eskf_vo" type="ekf_localization_node" name="imu_fusion" clear_params="true">
+    <rosparam command="load" file="$(find ekf_eskf_vo)/params/imu_fusion.yaml" />
+    <remap from="/odom" to="/imu_odom"/>
+    <remap from="/ekf_odom" to="/imu_odometry"/>   
+    <remap from="/ekf_path" to="/imu_path"/>   
+  </node> -->
+  <!-- 使用imu -->
+  <node pkg="ekf_eskf_vo" type="ekf_localization_node" name="imu_fusion" clear_params="true">
+    <rosparam command="load" file="$(find ekf_eskf_vo)/params/imu_fusion.yaml" />
+    <remap from="/imu/data" to="/imu/data"/>
+    <remap from="/ekf_odom" to="/imu_odometry"/>   
+    <remap from="/ekf_path" to="/imu_path"/>   
+  </node> -->
+  <!-- GPS/IMU融合 -->
+  <node pkg="ekf_eskf_vo" type="ekf_localization_node" name="gps_imu_fusion" clear_params="true">
+    <rosparam command="load" file="$(find ekf_eskf_vo)/params/gps_imu_fusion.yaml" />
+    <remap from="/odom" to="/gps/odom_base"/>
+    <remap from="/imu/data" to="/imu/data"/>
+    <remap from="/ekf_odom" to="/gps_imu_odometry"/>   
+    <remap from="/ekf_path" to="/gps_imu_path"/>   
+  </node>
+  <!-- VO/IMU融合 -->
+  <node pkg="ekf_eskf_vo" type="ekf_localization_node" name="vo_imu_fusion" clear_params="true">
+    <rosparam command="load" file="$(find ekf_eskf_vo)/params/vo_imu_fusion.yaml" />
+    <remap from="/odom" to="/stereo_odometry"/>
+    <remap from="/imu/data" to="/imu/data"/>
+    <remap from="/ekf_odom" to="/vo_imu_odometry"/>   
+    <remap from="/ekf_path" to="/vo_imu_path"/>  
+  </node>
+    <!-- GPS/IMU/VO融合 -->
+  <node pkg="ekf_eskf_vo" type="ekf_localization_node" name="gps_imu_vo_fusion" clear_params="true">
+    <rosparam command="load" file="$(find ekf_eskf_vo)/params/gps_imu_vo_fusion.yaml" />
+    <!-- 订阅的话题 -->
+    <remap from="/vo" to="/stereo_odometry"/> 
+    <remap from="/imu/data" to="/imu/data"/>
+    <remap from="/odom" to="/gps/odom_base"/> 
+    <!-- 发布的话题 -->
+    <remap from="/ekf_odom" to="/gps_imu_vo_odometry"/>   
+    <remap from="/ekf_path" to="/gps_imu_vo_path"/> 
+  </node>
+
+  <!-- 视觉里程计从载体坐标系转换到导航东北天坐标系 -->
+  <!-- <node name="vo_imu2enu" pkg="coordinate_transform" type="vo_imu2enu" >
+    <remap from="/stereo_odometry_enu"   to="/vo_imu_odometry_enu"/>
+    <remap from="/stereo_odometry"   to="/vo_imu_odometry"/>
+    <remap from="/imu/initial_imu"   to="/imu/initial_imu"/>
+  </node> -->
+
+  <!-- 传感器融合定位 -->
+  <!-- eskf -->
+  <node type="eskf_imu_gps_node" pkg="eskf_imu_gps" name="eskf_imu_fusion" output="screen" >
+    <!-- <remap from="/fix" to="/navsat/fix"/> -->
+    <remap from="/fix" to="/gps/odom_base"/><!--控制gps通断-->
+    <remap from="/imu/data" to="/imu/data"/>
+    <param name="acc_noise"       type="double" value="1e-2" />
+    <param name="gyr_noise"       type="double" value="1e-4" />
+    <param name="acc_bias_noise"  type="double" value="1e-6" />
+    <param name="gyr_bias_noise"  type="double" value="1e-8" />
+    <param name="p_I_GNSS_x"      type="double" value="0.333"/>
+    <param name="p_I_GNSS_y"      type="double" value="0."/>
+    <param name="p_I_GNSS_z"      type="double" value="0.013"/>
+    <param name="publish_tf"      type="bool" value="false"/>
+  </node>
+    <!-- ekf -->
+  <node pkg="ekf_eskf_vo" type="ekf_localization_node" name="ekf_fusion" clear_params="true">
+    <rosparam command="load" file="$(find ekf_eskf_vo)/params/my_param.yaml" />
+    <!-- 订阅的话题 -->
+    <remap from="/vo" to="/stereo_odometry"/> 
+    <remap from="/eskf_odom" to="/gps/odom_base"/> 
+    <!-- 发布的话题 -->
+    <remap from="/ekf_odom" to="/ekf_odom"/>   
+    <remap from="/ekf_path" to="/ekf_path"/> 
+  </node>
+
+  <!--里程计数据保存-->
+  <include file="$(find data_store)/launch/data_record_kitti.launch">
+  </include>
+
+  <!-- 可视化 -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find shigu_viz)/rviz/kitti_test.rviz" output="screen"/> 
+
+</launch>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+  <robot name="liangcang">
+<!--base_link-->
+     <link name="base_link">
+       <collision>
+            <geometry>
+              <box size="0.00001 0.00001 0.00001"/>
+            </geometry>
+       </collision>
+        <inertial>
+           <mass value="1000000" />
+           <origin xyz="0 0 0" rpy="0 0 0"/>
+           <inertia ixx="1000000" ixy="0.0" ixz="0.0" iyy="1000000" iyz="0.0" izz="1000000" />
+         </inertial>
+     </link>
+  <!--liangcang-->
+  <joint name="liangcang_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="liangcang"/>
+  </joint>
+  <link name="liangcang">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+       <mesh filename= "package://shigu_gazebo/worlds/my_world/base_link.STL"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+       <mesh filename= "package://shigu_gazebo/worlds/my_world/base_link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="liangcang">
+        <material>Gazebo/Orange</material>    
+  </gazebo>
+  <gazebo reference="base_link">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <kp>500000.0</kp>
+    <kd>100000.0</kd>
+  </gazebo>  
+  
+
+  </robot>
+
+
